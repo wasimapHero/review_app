@@ -1,5 +1,5 @@
 
-import 'package:review_app/screens/login_screen.dart';
+import 'package:review_app/screens/signup.dart';
 
 class TRouteNames {
 
@@ -7,4 +7,5 @@ class TRouteNames {
   static final myAccountPage = '/myAccountPage';
   static final sharePage = '/sharePage';
   static final loginScreen = '/login';
+  static final signup = '/signup';
 }

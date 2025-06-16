@@ -7,11 +7,11 @@ class Review {
   final String arrivalAirport;
   final String airline;
   final String travelClass;
-  final String review;
+  final String? reviewText;
   final String travelDate;
   final int rating;
-  final List<String> images;
-  final List<Comment> comments;
+  final List<String>? images;
+  final List<Comment>? comments;
 
   Review({
     required this.id,
@@ -19,11 +19,11 @@ class Review {
     required this.arrivalAirport,
     required this.airline,
     required this.travelClass,
-    required this.review,
+     this.reviewText,
     required this.travelDate,
     required this.rating,
-    required this.images,
-    required this.comments,
+     this.images,
+     this.comments,
   });
 
   factory Review.fromJson(Map<String, dynamic> json) {
@@ -33,7 +33,7 @@ class Review {
       arrivalAirport: json['arrival_airport'],
       airline: json['airline'],
       travelClass: json['class'],
-      review: json['review'],
+      reviewText: json['review_text'],
       travelDate: json['travel_date'],
       rating: json['rating'],
       images: List<String>.from(json['images'] ?? []),
