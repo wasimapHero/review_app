@@ -1,86 +1,151 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:review_app/controller/feed_Controller.dart';
+import 'package:review_app/widgets/action_button.dart';
+import 'package:review_app/widgets/post_and_comment_card.dart';
+import 'package:review_app/widgets/post_card.dart';
+import 'package:review_app/widgets/post_comment_section.dart';
 
 class FeedPage extends StatelessWidget {
-  final feedController = Get.find<FeedController>();
-
-  Widget buildImages(List<String> images) {
-    if (images.length == 1) {
-      return Image.network(images[0], fit: BoxFit.cover);
-    } else if (images.length == 2) {
-      return Row(
-        children: images.map((url) => Expanded(child: Image.network(url, fit: BoxFit.cover))).toList(),
-      );
-    } else {
-      return GridView.builder(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
-        ),
-        itemCount: images.length > 4 ? 4 : images.length,
-        itemBuilder: (context, index) {
-          if (index == 3 && images.length > 4) {
-            return Stack(
-              children: [
-                Image.network(images[3], fit: BoxFit.cover),
-                Container(
-                  color: Colors.black45,
-                  alignment: Alignment.center,
-                  child: Text('+${images.length - 3}', style: TextStyle(color: Colors.white, fontSize: 20)),
-                )
-              ],
-            );
-          }
-          return Image.network(images[index], fit: BoxFit.cover);
-        },
-      );
-    }
-  }
+  const FeedPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Feed')),
-      body: feedController.reviews.isNotEmpty ? Obx(() => ListView.builder(
-            itemCount: feedController.reviews.length,
-            itemBuilder: (context, index) {
-              final review = feedController.reviews[index];
-              final commentController = feedController.commentControllers[review.id] ??= TextEditingController();
-              return Card(
-                margin: EdgeInsets.all(10),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('${review.airline} | ${review.travelClass} | ${review.departureAirport} | ${review.arrivalAirport}'),
-                      SizedBox(height: 4),
-                      Text(review.departureAirport),
-                      SizedBox(height: 4),
-                      Text('Date: ${review.travelDate}, Rating: ${review.rating}'),
-                      SizedBox(height: 8),
-                      buildImages(review.images!),
-                      Divider(),
-                      Text('Comments:'),
-                      TextField(
-                        controller: commentController,
-                        decoration: InputDecoration(hintText: 'Write a comment'),
-                        onSubmitted: (val) {
-                          // feedController.postComment(review.id, val);
-                          commentController.clear();
-                        },
+      backgroundColor: const Color.fromARGB(255, 153, 154, 155),
+      appBar: AppBar(
+        toolbarHeight: 50,
+        backgroundColor: Colors.white,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: Text(
+                        'Airline Review',
+                        style: TextStyle(
+                          color: Color(0xFF232323),
+                          fontFamily: 'Plus Jakarta Sans',
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-              );
+        ), 
+        actions: [
+          // Notification Icon
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              // Notification action
             },
-          )) : Center(child: Text("No reviews posted yet."),),
+          ),
+
+          // User Profile Picture
+          CircleAvatar(
+            radius: 20,
+            backgroundImage: AssetImage(
+              'assets/images/user/user.png', // Replace with actual image URL
+            ),
+          ),
+
+          // Menu Icon
+          IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              // Menu action
+            },
+          )
+        ],
+      ),
+      body: Container(
+        padding: EdgeInsets.only(top: 15),
+        width: double.infinity,
+        constraints:  BoxConstraints(maxWidth: 480),
+        decoration:  BoxDecoration(
+          color: const Color.fromARGB(255, 245, 245, 245),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+
+              // Content
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 12),
+
+                    // Action Buttons Row
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: Get.width * 0.50,
+                          child: ActionButton(
+                              text: "Share your experience",
+                              iconWidth: 20,
+                              iconHeight: 30,
+                              fontSize: 13,
+                              letterSpacing: 0.26,
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              icon: 'assets/images/icons/share-experience.png'),
+                        ),
+                        const SizedBox(width: 4),
+                        SizedBox(
+                          width: Get.width * 0.38,
+                          child: ActionButton(
+                              text: "Ask a question",
+                              iconWidth: 20,
+                              iconHeight: 30,
+                              fontSize: 13,
+                              letterSpacing: 0.26,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 9, vertical: 13),
+                              icon: 'assets/images/icons/ask_a_ques.png'),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Search Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ActionButton(
+                          text: "Search",
+                          iconWidth: 20,
+                          iconHeight: 30,
+                          fontSize: 13,
+                          letterSpacing: 0.26,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 9, vertical: 7),
+                          icon: 'assets/images/icons/search.png'),
+                    ),
+
+                    const SizedBox(height: 21),
+
+                    // Featured Image
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        'assets/images/products/air-transat-plane-avion-1200x628.jpg',
+                        height: 100,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    PostAndCommentCard(),
+
+                    
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
+
+
+// according to above Review Model, Table aql, Comment Model, table sql, write code of 'FeedPage' where the UI is this:

@@ -38,6 +38,9 @@ dependencies:
 
   # Product Specific
   capped_progress_indicator: ^0.0.2
+  intl: ^0.20.2
+  dotted_border: ^2.1.0
+  dropdown_search: ^5.0.6
 
 
 dev_dependencies:
@@ -67,6 +70,7 @@ flutter:
     - .env
     - assets/images/user/
     - assets/images/products/
+    - assets/images/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -80,6 +84,12 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
+    - family: OpenSans
+      fonts:
+        - asset: assets/fonts/OpenSans-Regular.ttf
+        - asset: assets/fonts/OpenSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/OpenSans-Medium.ttf
     - family: Poppins
       fonts:
         - asset: assets/fonts/Poppins-Light.ttf

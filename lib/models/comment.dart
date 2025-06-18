@@ -1,15 +1,39 @@
 class Comment {
-  final int id;
-  final String text;
-  final List<Comment> replies;
+  final String id;
+  final int reviewId;
+  final String userId;
+  final String? parentId;
+  final String content;
+  final DateTime createdAt;
 
-  Comment({required this.id, required this.text, this.replies = const []});
+  Comment({
+    required this.id,
+    required this.reviewId,
+    required this.userId,
+    this.parentId,
+    required this.content,
+    required this.createdAt,
+  });
 
-  factory Comment.fromJson(Map<String, dynamic> json) {
+  factory Comment.fromMap(Map<String, dynamic> map) {
     return Comment(
-      id: json['id'],
-      text: json['text'],
-      replies: [],
+      id: map['id'],
+      reviewId: map['review_id'],
+      userId: map['user_id'],
+      parentId: map['parent_id'],
+      content: map['content'],
+      createdAt: DateTime.parse(map['created_at']),
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'review_id': reviewId,
+      'user_id': userId,
+      'parent_id': parentId,
+      'content': content,
+      'created_at': createdAt.toIso8601String(),
+    };
   }
 }

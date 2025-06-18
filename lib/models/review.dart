@@ -12,6 +12,7 @@ class Review {
   final int rating;
   final List<String>? images;
   final List<Comment>? comments;
+  final int? likes;
 
   Review({
     required this.id,
@@ -24,6 +25,7 @@ class Review {
     required this.rating,
      this.images,
      this.comments,
+     this.likes, 
   });
 
   factory Review.fromJson(Map<String, dynamic> json) {
@@ -38,6 +40,7 @@ class Review {
       rating: json['rating'],
       images: List<String>.from(json['images'] ?? []),
       comments: [],
+      likes: 0
     );
   }
 }

@@ -32,35 +32,7 @@ class FeedController extends GetxController {
   }
 }
 
-  // ---------add review
-  Future<void> addReview({
-  required String departureAirport,
-  required String arrivalAirport,
-  required String airline,
-  required String travelClass,
-   String? reviewText,
-  required DateTime travelDate,
-  required int rating,
-   List<String>? images,
-}) async {
-  final user = Supabase.instance.client.auth.currentUser;
-  if (user == null) return;
-
-  final response = await Supabase.instance.client.from('reviews').insert({
-    'user_id': user.id,
-    'departure_airport': departureAirport,
-    'arrival_airport': arrivalAirport,
-    'airline': airline,
-    'class': travelClass,
-    'review': reviewText,
-    'travel_date': travelDate,
-    'rating': rating,
-    'images': images,
-  });
   
-
-  await fetchReviews(); // refresh the local list
-}
 
 
   // ---------delete Review
