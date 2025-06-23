@@ -19,6 +19,8 @@ class FeedPage extends StatelessWidget {
   final userInfoController = Get.find<UserinfoController>();
   final myAccountController = Get.find<MyAccountController>();
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,8 +165,6 @@ class FeedPage extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 14),
-
-                    // PostAndCommentCard(),
 
                     // Display fetched reviews
                     Obx(() {

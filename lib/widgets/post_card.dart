@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:review_app/controller/feed_Controller.dart';
 import 'package:review_app/models/comment.dart';
+import 'package:review_app/screens/photo_gallery_page.dart';
 import 'package:review_app/widgets/badge_chip.dart';
 import 'package:review_app/widgets/comment_card.dart';
 
@@ -20,7 +21,7 @@ class PostCard extends StatelessWidget {
 
   const PostCard({
     Key? key,
-     this.userImage,
+    this.userImage,
     required this.userName,
     required this.timeAgo,
     this.rating,
@@ -34,8 +35,10 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var imageList = <String>[].obs;
+    imageList.value = postImages!;
 
-  final feedController = Get.find<FeedController>();
+    final feedController = Get.find<FeedController>();
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       child: Column(
@@ -45,7 +48,7 @@ class PostCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // userImage, name, posted time ago 
+              // userImage, name, posted time ago
               Flexible(
                 flex: 3,
                 child: Row(
@@ -99,8 +102,8 @@ class PostCard extends StatelessWidget {
                   ],
                 ),
               ),
-              
-              // more and rating 
+
+              // more and rating
               Flexible(
                 flex: 2,
                 child: Column(
@@ -195,8 +198,9 @@ class PostCard extends StatelessWidget {
                 Text(
                   content,
                   maxLines: feedController.isExpanded.value ? null : 3,
-                  overflow:
-                      feedController.isExpanded.value ? TextOverflow.visible : TextOverflow.fade,
+                  overflow: feedController.isExpanded.value
+                      ? TextOverflow.visible
+                      : TextOverflow.fade,
                   style: const TextStyle(
                     color: Color(0xFF404040),
                     fontFamily: 'OpenSans',
@@ -207,52 +211,99 @@ class PostCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 if (content.length > 100 && !feedController.isExpanded.value)
-                GestureDetector(
-                  onTap: feedController.toggleExpanded,
-                  child: Text(
-                    'See more',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontFamily: 'OpenSans',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      height: 1.3,
+                  GestureDetector(
+                    onTap: feedController.toggleExpanded,
+                    child: Text(
+                      'See more',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontFamily: 'OpenSans',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        height: 1.3,
+                      ),
                     ),
                   ),
-                ),
                 if (feedController.isExpanded.value)
-            GestureDetector(
-              onTap: feedController.toggleExpanded,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: Text(
-                  "See less",
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w500,
+                  GestureDetector(
+                    onTap: feedController.toggleExpanded,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 5),
+                      child: Text(
+                        "See less",
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
               ],
             ),
           ),
 
           const SizedBox(height: 14),
 
-          // Post Image
-          // postImages != null ? Image.network(
-          //   postImages![0],
-          //   width: double.infinity,
-          //   height: 158,
-          //   fit: BoxFit.cover,
-          // ) :
-          Image.asset(
-            'assets/images/products/air-transat-plane-avion-1200x628.jpg',
-            width: double.infinity,
-            height: 158,
-            fit: BoxFit.cover,
-          ),
+          Obx(() {
+            final imgs = imageList.value;
+            // if only 1, full width; else 2 per row
+            var cross;
+            if (imgs.length == 1) {
+              cross = 1;
+            } else if (imgs.length == 2 || imgs.length > 2) {
+              cross = 2;
+            }
+            //
+            final displayCount =
+                imgs.length == 1 ? 1 : (imgs.length > 4 ? 4 : imgs.length);
+
+            return GridView.builder(
+              shrinkWrap: true, // lets the grid be as tall as its contents
+              physics: NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(8),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: cross,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 1.0,
+              ),
+              itemCount: displayCount,
+              itemBuilder: (_, index) {
+                final url = imgs[index];
+                return GestureDetector(
+                  onTap: () {
+                    Get.to(
+                      () => PhotoGalleryPage(images: imgs, initialIndex: index),
+                      transition: Transition.fadeIn,
+                    );
+                  },
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.network(url, fit: BoxFit.cover),
+                      if (index == 3 && imgs.length > 4)
+                        // show “+N” overlay on the 4th when more than 4
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.black54,
+                            child: Center(
+                              child: Text(
+                                '+${imgs.length - 4}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }),
 
           const SizedBox(height: 6),
 
