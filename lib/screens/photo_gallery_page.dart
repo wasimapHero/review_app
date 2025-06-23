@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:review_app/controller/imageInfo_COntroller.dart';
 import 'package:review_app/controller/photoGallery_Controller.dart';
 
 
@@ -20,8 +19,6 @@ class PhotoGalleryPage extends StatelessWidget {
     // 1) Put & init controller
     final photoGalleryController = Get.put(PhotoGalleryController());
     photoGalleryController.init(images, initialIndex,screenHeight, context);
-
-    final imageInfoController = Get.find<ImageInfoController>();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Gallery')),

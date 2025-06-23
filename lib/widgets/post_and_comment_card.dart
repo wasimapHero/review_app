@@ -5,7 +5,7 @@ import 'package:review_app/controller/feed_Controller.dart';
 import 'package:review_app/models/review.dart';
 import 'package:review_app/utils/format_date.dart';
 import 'package:review_app/widgets/post_card.dart';
-import 'package:review_app/widgets/post_comment_section.dart';
+import 'package:review_app/widgets/comment/post_comment_section.dart';
 
 class PostAndCommentCard extends StatelessWidget {
   PostAndCommentCard({Key? key, required this.review}) : super(key: key);

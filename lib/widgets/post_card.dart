@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:review_app/controller/feed_Controller.dart';
 import 'package:review_app/models/comment.dart';
 import 'package:review_app/screens/photo_gallery_page.dart';
-import 'package:review_app/widgets/badge_chip.dart';
-import 'package:review_app/widgets/comment_card.dart';
+import 'package:review_app/widgets/feed-page/badge_chip.dart';
+import 'package:review_app/widgets/comment/comment_card.dart';
 
 class PostCard extends StatelessWidget {
   final String? userImage;
