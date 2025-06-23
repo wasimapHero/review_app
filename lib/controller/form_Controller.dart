@@ -1,34 +1,52 @@
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:review_app/models/comment.dart';
+import 'package:review_app/controller/feed_Controller.dart';
+import 'package:review_app/controller/image_upload_Controller.dart';
+import 'package:review_app/controller/userInfoFetch_Controller.dart';
 import 'package:review_app/routes/app_routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/review.dart';
 
 class FormController extends GetxController {
+  final currentUser = Supabase.instance.client.auth.currentUser;
+  final imageUploadController = Get.put(ImageUploadController());
+  final feedController = Get.put(FeedController() );
 
   final formKey = GlobalKey<FormState>();
 
-
-  final departureCtrl = TextEditingController();
-  final arrivalCtrl = TextEditingController();
-  final airlineCtrl = TextEditingController();
   final classCtrl = TextEditingController();
   final reviewTextCtrl = TextEditingController();
   final travelDateCtrl = TextEditingController();
   final ratingCtrl = TextEditingController();
-  final imageUrlsCtrl = TextEditingController();
 
   final ScrollController reviewScrollCtrl = ScrollController();
 
+  final travelDateUItcFormat = DateTime.now().obs;
   final selectedDeparture = ''.obs;
   final selectedArrival = ''.obs;
   final selectedAirline = ''.obs;
   final selectedClass = ''.obs;
   final rating = 0.obs;
 
-  final airports = <String>["CDG", "JFK", "LHR", "DXB", "HND"].obs; // sample static
-  final airlines = <String>["Air France", "American Airlines", "Emirates", "Japan Airlines"].obs;
+  final showSuggestions = false.obs;
+  final singleValueDropDownController1 = SingleValueDropDownController();
+  final singleValueDropDownController2 = SingleValueDropDownController();
+  final singleValueDropDownController3 = SingleValueDropDownController();
+
+  final selectedValue = 'Option 1'.obs;
+
+  final isSingleValContDisposed1 = false.obs;
+  final airports =
+      <String>["CDG", "JFK", "LHR", "DXB", "HND"].obs; // sample static
+  final airlines = <String>[
+    "Air France",
+    "American Airlines",
+    "Emirates",
+    "Japan Airlines"
+  ].obs;
+
+  final imageReviewCommonId = ''.obs;
 
   final reviewData = <Review>[].obs;
 
@@ -41,9 +59,7 @@ class FormController extends GetxController {
   var ratingError = RxnString(null);
   var reviewError = RxnString(null);
 
-
-   
-    @override
+  @override
   void onInit() {
     // Add listener to scroll to bottom as user types
     reviewTextCtrl.addListener(() {
@@ -57,23 +73,24 @@ class FormController extends GetxController {
         }
       });
     });
+
     super.onInit();
   }
 
   @override
   void onClose() {
-    departureCtrl.dispose();
-    arrivalCtrl.dispose();
-    airlineCtrl.dispose();
     classCtrl.dispose();
     reviewTextCtrl.dispose();
     travelDateCtrl.dispose();
     ratingCtrl.dispose();
-    imageUrlsCtrl.dispose();
     reviewScrollCtrl.dispose();
+
+    singleValueDropDownController1.dispose();
+    singleValueDropDownController2.dispose();
+    singleValueDropDownController3.dispose();
+    isSingleValContDisposed1.value = true;
     super.onClose();
   }
-
 
   bool validateAll() {
     // Clear previous errors
@@ -99,7 +116,7 @@ class FormController extends GetxController {
       airlineError.value = "Select airline";
       valid = false;
     }
-    if (selectedClass.value== 'Any') {
+    if (selectedClass.value == 'Any') {
       classError.value = "Select class";
       valid = false;
     }
@@ -119,57 +136,59 @@ class FormController extends GetxController {
     return valid;
   }
 
-
-
   /// ----------------- Add Review to supabase
   Future<void> addReview() async {
-
-     if (validateAll()) {
+    if (validateAll()) {
       //  logic here
 
       try {
-      final List<String> imageList = imageUrlsCtrl.text
-          .split(',')
-          .map((url) => url.trim())
-          .where((url) => url.isNotEmpty)
-          .toList();
+        // first get fetched imageUrls from imageUploadController.fetchedImageUrls
+        List<String> imageList = [];
+        imageList = imageUploadController.fetchedImageUrls;
 
-      final reviewMap = {
-        'departure_airport': selectedDeparture.value,
-        'arrival_airport': selectedArrival.value,
-        'airline': selectedAirline.value,
-        'class': selectedClass.value,
-        'review_text': reviewTextCtrl.text.trim(),
-        'travel_date': travelDateCtrl.text.trim(),
-        'rating': rating.value,
-        'images': imageList,
-      };
+        print('fetched iMageUrls are: ${imageList.length}');
+        
 
-      final response = await Supabase.instance.client
-          .from('reviews')
-          .insert(reviewMap)
-          .select()
-          .single();
+        final review = Review(
+          userId: currentUser!.id,
+          userImage: feedController.fetchedUserInfo.value['user_image'], // or provide actual image URL
+          userName: feedController.fetchedUserInfo.value['user_name'], 
+          imageReviewCommonId: imageReviewCommonId.value,
+          createdAt: DateTime.now().toUtc(), //type: DateTime
+          departureAirport: selectedDeparture.value,
+          arrivalAirport: selectedArrival.value,
+          airline: selectedAirline.value,
+          travelClass: selectedClass.value,
+          reviewText: reviewTextCtrl.text.trim(),
+          travelDate: travelDateUItcFormat.value, //type: DateTime
+          rating: rating.value,
+          images: imageList,
+          likes: 0,
+        );
 
-      final newReview = Review.fromJson(response);
-      reviewData.add(newReview);
+        final response = await Supabase.instance.client
+            .from('reviews')
+            .insert(review.toJson())
+            .select()
+            .single(); //insert(review)   ❌ Not valid; insert expects a Map, not a Review object
 
-     
+        final newReview = Review.fromJson(response);
+        reviewData.add(newReview);
 
+        Get.snackbar('Success', 'Review added successfully',
+            snackPosition: SnackPosition.BOTTOM);
+        clearForm();
+        await feedController.fetchReviews(); // reload the review data to update in UI
 
-      Get.snackbar('Success', 'Review added successfully', snackPosition: SnackPosition.BOTTOM);
-      clearForm();
-      Get.back();
-      Get.offAndToNamed(TRouteNames.feedPage);
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to add review: \ $e', snackPosition: SnackPosition.BOTTOM);
-      print(e);
-    }
+        Get.offAllNamed(TRouteNames.feedPage);
+        update();
+      } catch (e) {
+        Get.snackbar('Error', 'Failed to add review: \ $e',
+            snackPosition: SnackPosition.BOTTOM);
+        print(e);
+      }
       print("All fields valid, submitting review");
     }
-
-
-    
   }
 
   void clearForm() {
@@ -181,6 +200,6 @@ class FormController extends GetxController {
 
     reviewTextCtrl.clear();
     travelDateCtrl.clear();
-    imageUrlsCtrl.clear();
+    showSuggestions.value = false;
   }
 }

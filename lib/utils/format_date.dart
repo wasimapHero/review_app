@@ -1,0 +1,27 @@
+import 'package:intl/intl.dart';
+
+class FormateDateAndTime {
+  static String getTimeAgo(String dateTimeString) {
+    final DateTime dateTime = DateTime.parse(dateTimeString).toLocal();
+    
+
+    Duration difference = DateTime.now().difference(dateTime);
+
+    if (difference.inSeconds < 60) {
+      return '${difference.inSeconds} sec ago';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} min ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} hr ago';
+    } else {
+       return '${difference.inDays}d ago';
+       
+    }
+  }
+
+  static String getMonthYear(String dateTimeString) {
+    final DateTime dateTime = DateTime.parse(dateTimeString);
+    String month_Year = DateFormat('MMM yyyy').format(dateTime);
+        return month_Year;
+  }
+}

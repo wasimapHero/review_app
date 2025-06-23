@@ -125,7 +125,7 @@ class AuthController extends GetxController {
      
   }
 
-  void signOut() async {
+  Future<void> signOut() async {
     await supabase.auth.signOut();
     Get.offAllNamed(TRouteNames.loginScreen);
   }

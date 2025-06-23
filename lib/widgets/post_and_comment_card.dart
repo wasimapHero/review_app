@@ -1,52 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:review_app/controller/feed_Controller.dart';
+import 'package:review_app/models/review.dart';
+import 'package:review_app/utils/format_date.dart';
 import 'package:review_app/widgets/post_card.dart';
 import 'package:review_app/widgets/post_comment_section.dart';
 
 class PostAndCommentCard extends StatelessWidget {
-const PostAndCommentCard({ Key? key }) : super(key: key);
+  PostAndCommentCard({Key? key, required this.review}) : super(key: key);
+
+  final Review review;
+  final feedController = Get.find<FeedController>();
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color:  Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.only(top: 16, right: 16, left: 16),
       margin: EdgeInsets.only(bottom: 13),
-      child: Column(
+      child: Column( 
         children: [
-                // Post Cards list View
-                    const PostCard(
-                      userImage: 'assets/images/icons/search.png',
-                      userName: 'Dianne Russell',
-                      timeAgo: '1 day ago',
-                      rating: 5,
-                      badges: [
-                        'LHR-DEL',
-                        'Air-India',
-                        'Business Class',
-                        'July 2023'
-                      ],
-                      content:
-                          'Stay tuned for a smoother, more convenient experience right at your fingertips , a smoother, more convenient a ​smoother, more convenient other, more convenient experience right at your ',
-                      postImage: 'assets/images/icons/search.png',
-                      likes: '30 Likes',
-                      comments: '20 Comments',
-                      commentUserImage: 'assets/images/user/user.png',
-                      commentUserName: 'Darron Levesque',
-                      updatedAt: '3 min ago',
-                      commentLikes: '5 Upvotes',
-                      commentText:
-                          'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis',
-                      
-                    ),
-                    const SizedBox(height: 10),
+          // Post Cards list View
+            PostCard(
+            userImage: review.userImage!.toString() ,
+            userName: review.userName!.length>20 ? review.userName!.substring(0, 20) : review.userName!,
+            timeAgo: FormateDateAndTime.getTimeAgo(
+                review.createdAt.toIso8601String()),
+            rating: review.rating,
+            badges: [
+              review.departureAirport,
+              review.arrivalAirport,
+              review.airline,
+              review.travelClass,
+              FormateDateAndTime.getMonthYear(review.travelDate.toIso8601String())
+              
+            ],
+            content:
+                review.reviewText ?? '',
+            postImages: review.images,
+            likes: review.likes.toString(),
+            commentsNumber: '20 Comments',
+            comments: [],
+          ),
+          const SizedBox(height: 10),
 
-
-        /// Post Comment Section
-                    PostCommentSection(),
+          /// Post Comment Section
+          PostCommentSection(),
         ],
       ),
     );
