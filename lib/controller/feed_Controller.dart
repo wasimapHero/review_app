@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:review_app/controller/comment_Controller.dart';
 import 'package:review_app/controller/form_Controller.dart';
 import 'package:review_app/controller/image_upload_Controller.dart';
 import 'package:review_app/controller/userInfoFetch_Controller.dart';
@@ -12,11 +13,11 @@ import '../models/review.dart';
 
 class FeedController extends GetxController {
   final supabase = Supabase.instance.client;
-  
+
   final imageUploadController = Get.put(ImageUploadController());
   final userInfoFetchController = Get.find<UserinfofetchController>();
+  final commentController = Get.find<CommentController>();
 
-  final commentControllers = <int, TextEditingController>{};
   final replyControllers = <int, TextEditingController>{};
 
   var fetchedReviews = <Review>[].obs;
@@ -29,10 +30,8 @@ class FeedController extends GetxController {
 
   var isLoadingReview = false.obs;
 
-
-
   //
-  
+
   void toggleExpanded() {
     isExpanded.value = !isExpanded.value;
   }
@@ -42,18 +41,19 @@ class FeedController extends GetxController {
     super.onInit();
     fetchReviews();
     fetchUserInfoFromDB();
+    
   }
 
+  
+
   Future<void> fetchUserInfoFromDB() async {
-    final data = await userInfoFetchController.fetchUserInfo(Supabase.instance.client.auth.currentUser!.id);
+    final data = await userInfoFetchController
+        .fetchUserInfo(Supabase.instance.client.auth.currentUser!.id);
     fetchedUserInfo.assignAll(data);
     log('fetchuser info from userInfoFetchController: ${fetchedUserInfo.values.first}');
   }
 
-
-
   Future<void> fetchReviews() async {
-    
     try {
       isLoadingReview.value = true;
       final response = await supabase.from('reviews').select();
@@ -65,12 +65,14 @@ class FeedController extends GetxController {
             .toList();
 
         fetchedReviews.assignAll(loadedReviews);
-        
       } else {
         isLoadingReview.value = false;
       }
 
       print("Fetched Reviews: ${fetchedReviews.length}");
+
+
+      
     } catch (e) {
       print("Error fetching reviews: $e");
       Get.snackbar("Error", "Failed to fetch reviews");

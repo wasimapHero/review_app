@@ -8,6 +8,7 @@ import 'package:review_app/controller/image_upload_Controller.dart';
 import 'package:review_app/widgets/review/errorText/errorText.dart';
 import 'package:review_app/widgets/review/image_receiver.dart';
 import 'package:review_app/widgets/review/rating.dart';
+import 'package:review_app/widgets/review/submit_Button.dart';
 import 'package:review_app/widgets/review/textfields/dropdown_Textfield.dart';
 import 'package:review_app/widgets/review/textfields/travelDate_Textfield.dart';
 
@@ -104,7 +105,7 @@ class AddReviewPage extends StatelessWidget {
             ErrorText(errorText: formController.classError),
             const SizedBox(height: 10),
 
-            // ------------- Review
+            // ------------- Review input box
             SizedBox(
               height: 100,
               child: TextFormField(
@@ -137,34 +138,8 @@ class AddReviewPage extends StatelessWidget {
             const SizedBox(height: 10),
 
             // Button submit
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black, // Button background color
-                  foregroundColor: Colors.white, // Text (and icon) color
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15)),
-                  fixedSize: Size(Get.width * 0.4, 42)),
-              onPressed: () async {
-                if (formController.validateAll()) {
-                  // fetch images just before adding the review
-                  await imageUploadController.fetchReviewImages(
-                      formController.imageReviewCommonId.value);
-
-                  await formController.addReview();
-                } else {
-                  Get.snackbar(
-                    "Validation Failed",
-                    "Please fill in all required fields",
-                    backgroundColor: Colors.red.shade100,
-                  );
-                }
-              },
-              child: Text(
-                'Share Now',
-                style: TextStyle(color: Colors.white, fontSize: 14),
-              ),
-            )
+            SubmitButton()
+            
           ],
         ),
       ),

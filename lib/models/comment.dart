@@ -1,6 +1,6 @@
 class Comment {
-  final String id;
-  final int reviewId;
+  final String? id;
+  final String reviewId;
   final String userId;
   final String? userName;
   final String? userImage;
@@ -9,34 +9,35 @@ class Comment {
   final DateTime createdAt;
 
   Comment({
-    required this.id,
+     this.id,
     required this.reviewId,
     required this.userId,
-     this.userName,
-     this.userImage,
+    this.userName,
+    this.userImage,
     this.parentId,
     required this.content,
     required this.createdAt,
   });
 
-  factory Comment.fromMap(Map<String, dynamic> map) {
+  factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
-      id: map['id'],
-      reviewId: map['review_id'],
-      userId: map['user_id'],
-      userName: map['user_name'],
-      userImage: map['user_image'],
-      parentId: map['parent_id'],
-      content: map['content'],
-      createdAt: DateTime.parse(map['created_at']),
+      id: json['id'] as String,
+      reviewId: json['review_id'] as String,
+      userId: json['user_id'] as String,
+      userName: json['user_name'] as String?,
+      userImage: json['user_image'] as String?,
+      parentId: json['parent_id'] as String?,
+      content: json['content'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'review_id': reviewId,
       'user_id': userId,
+      'user_name': userName,
+      'user_image': userImage,
       'parent_id': parentId,
       'content': content,
       'created_at': createdAt.toIso8601String(),

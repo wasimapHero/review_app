@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:review_app/controller/comment_Controller.dart';
 import 'package:review_app/controller/dropdown_search_Controller.dart';
 import 'package:review_app/controller/feed_Controller.dart';
 import 'package:review_app/controller/form_Controller.dart';
@@ -57,6 +58,11 @@ class AllBinding extends Bindings {
 
     Get.lazyPut<PhotoGalleryController>(
       () => PhotoGalleryController(),
+      fenix: true,
+    );
+
+    Get.lazyPut<CommentController>(
+      () => CommentController(),
       fenix: true,
     );
 

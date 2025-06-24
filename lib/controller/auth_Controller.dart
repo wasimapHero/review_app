@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_regex/flutter_regex.dart';
 import 'package:get/get.dart';
@@ -54,12 +56,12 @@ class AuthController extends GetxController {
 
     validateEmail(emailController.text);
     validatePassword(passController.text);
-    print(passController.text);
+    log(passController.text);
 
     if (emailError.isNotEmpty || passError.isNotEmpty){
       Get.snackbar('Validation Error!', '$passError, $emailError');
       return;
-    };
+    }
 
    //
     try {

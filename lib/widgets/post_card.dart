@@ -40,7 +40,7 @@ class PostCard extends StatelessWidget {
 
     final feedController = Get.find<FeedController>();
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -190,7 +190,7 @@ class PostCard extends StatelessWidget {
 
           const SizedBox(height: 28),
 
-          // Content review
+          // -------------------------- Content review
           Obx(
             () => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,6 +209,8 @@ class PostCard extends StatelessWidget {
                     height: 1.43,
                   ),
                 ),
+
+                // -------------------------    See more Option
                 const SizedBox(height: 8),
                 if (content.length > 100 && !feedController.isExpanded.value)
                   GestureDetector(
@@ -244,6 +246,7 @@ class PostCard extends StatelessWidget {
 
           const SizedBox(height: 14),
 
+          // ------------------------- images layout
           Obx(() {
             final imgs = imageList.value;
             // if only 1, full width; else 2 per row
@@ -394,40 +397,10 @@ class PostCard extends StatelessWidget {
 
           const SizedBox(height: 11),
 
-          // ----------------------- Comments Section ----------------
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // call comments list here
-              // map them
-              // then list them again- toList()
+         //
+         
+          const SizedBox(height: 10),
 
-              // CommentCard(
-              //   userImage: commentUserImage,
-              //   userName: commentUserName,
-              //   updatedAt: updatedAt,
-              //   commentLikes: commentLikes,
-              //   commentText: commentText,
-              // ),
-              SizedBox(
-                height: 13,
-              ),
-
-              /// ------ See more Comments section
-              const Text(
-                'See More Comments',
-                style: TextStyle(
-                  color: Color(0xFF646464),
-                  fontFamily: 'OpenSans',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  height: 1.3,
-                ),
-              ),
-
-              const SizedBox(height: 13),
-            ],
-          ),
         ],
       ),
     );

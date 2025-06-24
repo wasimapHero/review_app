@@ -126,6 +126,9 @@ class UserinfoController extends GetxController {
 
       Get.snackbar('Success', 'user info added successfully',
           snackPosition: SnackPosition.BOTTOM);
+
+          //
+         await feedController.fetchedReviews();
       Get.offAllNamed(TRouteNames.feedPage);
       update();
     } catch (e) {
