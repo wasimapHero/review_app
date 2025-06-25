@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
-import 'package:review_app/controller/auth_Controller.dart';
+import 'package:review_app/data/controller/auth_Controller.dart';
 import 'package:review_app/review_app.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
