@@ -10,24 +10,29 @@ class UserInfo {
   UserInfo({
     required this.userId,
     required this.email,
-     this.userName,
-     this.about,
-     this.userImage,
+    this.userName,
+    this.about,
+    this.userImage,
     required this.createdAt,
     required this.lastActive,
   });
 
   factory UserInfo.fromJson(Map<String, dynamic> json) {
     return UserInfo(
-      userId: json['user_id'] as String ,
-      email: json['email'] as String ,
-      userName: json['user_name'] as String ,
-      about: json['about'] as String ,
-      userImage: json['user_image'] as String ,
+      userId: json['user_id'] as String,
+      email: json['email'] as String,
+      userName: json['user_name'] as String,
+      about: json['about'] as String,
+      userImage: json['user_image'] as String,
       createdAt: DateTime.parse(json['created_at']),
       lastActive: DateTime.parse(json['last_active']),
     );
   }
-
- 
+  factory UserInfo.empty() {
+    return UserInfo(
+        userId: '',
+        email: '',
+        createdAt: DateTime.now(),
+        lastActive: DateTime.now());
+  }
 }

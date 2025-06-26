@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -48,10 +49,10 @@ class AirportController extends GetxController {
             airport.locality = '${p.locality}';
             airport.country = '${p.country}';
             airport.place = p.locality!.isEmpty ? '${p.country}' :'${p.locality}, ${p.country}';
-            print('airport place : ${airport.place}');
+            log('airport place : ${airport.place}');
           }
         } catch (e) {
-          print(e.toString());
+          log(e.toString());
           airport.place = '';
           airport.locality = '';
           airport.country = '';
@@ -62,10 +63,10 @@ class AirportController extends GetxController {
 
       airportList.value = tempList;
 
-      print('airportList.value[0].place : ${airportList.value[0].place}');
-      print('airportList.value[0].city : ${airportList.value[0].locality}');
-      print('airportList.value[0].lat : ${airportList.value[0].latitude}');
-      print(
+      log('airportList.value[0].place : ${airportList.value[0].place}');
+      log('airportList.value[0].city : ${airportList.value[0].locality}');
+      log('airportList.value[0].lat : ${airportList.value[0].latitude}');
+      log(
           'airportList.value[0].lat : ${double.parse(airportList.value[0].latitude)}');
     } on http.ClientException catch (e) {
       Get.snackbar('Exception', e.toString());

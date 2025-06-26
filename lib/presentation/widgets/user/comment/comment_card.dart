@@ -9,7 +9,7 @@ class CommentCard extends StatelessWidget {
   final String commentLikes;
   final String commentText;
 
-   CommentCard({
+  CommentCard({
     Key? key,
     required this.userImage,
     required this.userName,
@@ -26,36 +26,49 @@ class CommentCard extends StatelessWidget {
       width: Get.width - 40,
       margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.665),
-        color: const Color.fromARGB(255, 236, 243, 246)
-      ),
+          borderRadius: BorderRadius.circular(12.665),
+          color: const Color.fromARGB(255, 236, 243, 246)),
       padding: const EdgeInsets.all(13),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           // -----------------------------------> Header   (userId, name etc)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: (Get.width -100) * 0.75,
+              SizedBox(
+                width: (Get.width - 100) * 0.75,
                 child: Row(
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(14),
-                      child: Image.network(
-                        userImage,
+                      child: Container(
                         width: 28,
                         height: 28,
-                        fit: BoxFit.cover,
+                        decoration: BoxDecoration(
+                          image: ( userImage.isNotEmpty)
+                              ? DecorationImage(
+                                  image: NetworkImage(userImage),
+                                  fit: BoxFit.cover,
+                                  onError: (_,
+                                      __) {}, // You can handle error here if needed
+                                )
+                              : null,
+                          color: (userImage.isEmpty)
+                              ? Colors.grey[300]
+                              : null,
+                        ),
+                        child: (userImage.isEmpty)
+                            ? Icon(Icons.person, size: 20)
+                            : null,
                       ),
                     ),
+
                     const SizedBox(width: 9),
-                
+
                     // -------------------------------    user name
-                
+
                     Flexible(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +83,7 @@ class CommentCard extends StatelessWidget {
                               letterSpacing: -0.14,
                             ),
                           ),
-                
+
                           // -------------------------------    updatedAt
                           Text(updatedAt,
                               style: const TextStyle(
@@ -88,7 +101,7 @@ class CommentCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '${commentLikes} UpVotes',
+                '$commentLikes UpVotes',
                 style: const TextStyle(
                   color: Color(0xFF232323),
                   fontFamily: 'OpenSans',
@@ -117,40 +130,42 @@ class CommentCard extends StatelessWidget {
                 ),
               ),
 
-
-              const SizedBox(height: 6,),
+              const SizedBox(
+                height: 6,
+              ),
 
               // -----------------------   see more of comment button
               // -------------------------    See more Option
-                const SizedBox(height: 8),
-                if (commentText.length > 100 && !commentController.isExpanded.value)
-                  GestureDetector(
-                    onTap: commentController.toggleExpanded,
+              const SizedBox(height: 8),
+              if (commentText.length > 100 &&
+                  !commentController.isExpanded.value)
+                GestureDetector(
+                  onTap: commentController.toggleExpanded,
+                  child: Text(
+                    'see all..',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontFamily: 'OpenSans',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      height: 1.3,
+                    ),
+                  ),
+                ),
+              if (commentController.isExpanded.value)
+                GestureDetector(
+                  onTap: commentController.toggleExpanded,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 5),
                     child: Text(
-                      'see all..',
+                      "see less..",
                       style: TextStyle(
                         color: Colors.grey.shade600,
-                        fontFamily: 'OpenSans',
-                        fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        height: 1.3,
                       ),
                     ),
                   ),
-                if (commentController.isExpanded.value)
-                  GestureDetector(
-                    onTap: commentController.toggleExpanded,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 5),
-                      child: Text(
-                        "see less..",
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
+                ),
             ],
           ),
           const SizedBox(height: 16),
@@ -160,7 +175,6 @@ class CommentCard extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(4),
-
                 child: Row(
                   children: [
                     // upvote icon

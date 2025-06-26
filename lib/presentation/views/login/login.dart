@@ -8,6 +8,8 @@ import 'package:review_app/app/routes/app_routes.dart';
 class LoginScreen extends StatelessWidget {
   final auth = Get.find<AuthController>();
 
+   LoginScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,3 +120,8 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
+
+
+// wasimaesty@gmail.com
+// pass: abcd1234#D
+// device : 30 API

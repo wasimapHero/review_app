@@ -1,6 +1,4 @@
 
-import 'package:review_app/presentation/views/login/signup.dart';
-
 class TRouteNames {
 
   static final feedPage = '/';

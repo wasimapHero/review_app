@@ -4,11 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:review_app/data/services/airport_Controller.dart';
 import 'package:review_app/data/controller/comment_Controller.dart';
-import 'package:review_app/data/controller/form_Controller.dart';
 import 'package:review_app/data/controller/image_upload_Controller.dart';
 import 'package:review_app/data/controller/userInfoFetch_Controller.dart';
-import 'package:review_app/data/controller/userInfo_Controller.dart';
-import 'package:review_app/data/models/airport.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/review.dart';
@@ -33,7 +30,6 @@ class FeedController extends GetxController {
 
   var isLoadingReview = false.obs;
 
-
   //
 
   void toggleExpanded() {
@@ -43,23 +39,37 @@ class FeedController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    initLogic();
+
+    
+  }
+  void initLogic() {
+    //  init tasks here
     fetchReviews();
     fetchUserInfoFromDB();
     callAirportAPI();
   }
 
-  Future<void> callAirportAPI() async{
+  Future<void> callAirportAPI() async {
     await airportController.fetchAirports();
   }
 
-  
+ Future<void> fetchUserInfoFromDB() async {
+  final user = Supabase.instance.client.auth.currentUser;
 
-  Future<void> fetchUserInfoFromDB() async {
-    final data = await userInfoFetchController
-        .fetchUserInfo(Supabase.instance.client.auth.currentUser!.id);
-    fetchedUserInfo.assignAll(data);
-    log('fetchuser info from userInfoFetchController: ${fetchedUserInfo.values.first}');
+  if (user == null) {
+    log('❌ No authenticated user found.');
+    return;
   }
+
+  try {
+    final data = await userInfoFetchController.fetchUserInfo(user.id);
+    fetchedUserInfo.assignAll(data);
+    log('✅ Fetched user info: ${fetchedUserInfo.values.first}');
+  } catch (e) {
+    log('❌ Error fetching user info: $e');
+  }
+}
 
   Future<void> fetchReviews() async {
     try {
@@ -67,7 +77,7 @@ class FeedController extends GetxController {
       final response = await supabase.from('reviews').select();
       isLoadingReview.value = false;
 
-      if (response != null && response.isNotEmpty) {
+      if ( response.isNotEmpty) {
         List<Review> loadedReviews = response
             .map<Review>((reviewMap) => Review.fromJson(reviewMap))
             .toList();
@@ -77,12 +87,9 @@ class FeedController extends GetxController {
         isLoadingReview.value = false;
       }
 
-      print("Fetched Reviews: ${fetchedReviews.length}");
-
-
-      
+      log("Fetched Reviews: ${fetchedReviews.length}");
     } catch (e) {
-      print("Error fetching reviews: $e");
+      log("Error fetching reviews: $e");
       Get.snackbar("Error", "Failed to fetch reviews");
     }
   }
@@ -102,7 +109,7 @@ class FeedController extends GetxController {
             user.id); // Ensure users can only delete their own reviews
 
     if (response.error != null) {
-      print("Delete failed: ${response.error!.message}");
+      log("Delete failed: ${response.error!.message}");
     } else {
       await fetchReviews(); // Refresh the list after deletion
     }
@@ -141,7 +148,7 @@ class FeedController extends GetxController {
         .eq('user_id', user.id); // Ensure user can only update their own review
 
     if (response.error != null) {
-      print("Update failed: ${response.error!.message}");
+      log("Update failed: ${response.error!.message}");
     } else {
       await fetchReviews(); // Refresh list after update
     }

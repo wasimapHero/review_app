@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:review_app/data/controller/airport_dropdown_Controller.dart';
 import 'package:review_app/data/controller/airport_dropdown_ControllerArrival.dart';
 
 class SearchableAirportDropdownArrival extends StatelessWidget {

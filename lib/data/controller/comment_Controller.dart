@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:review_app/data/controller/feed_Controller.dart';
 import 'package:review_app/data/models/comment.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -23,39 +22,6 @@ class CommentController extends GetxController {
   var reviewIdFromReviewCard = ''.obs;
 
 
-
-
-
-  
-  // Get onTapped for a specific review ID
-  // bool setOnTappedFalse(String reviewId) {
-  //   if (!onTappedList.containsKey(reviewId)) {
-  //     onTappedList[reviewId] = false;
-  //   }
-  //   return onTappedList[reviewId]!;
-  // }
-  // bool setOnTappedTrue(String reviewId) {
-  //   if (!onTappedList.containsKey(reviewId)) {
-  //     onTappedList[reviewId] = true;
-  //   }
-  //   return onTappedList[reviewId]!;
-  // }
-
-  // // Get showErrorText for a specific review ID
-  // bool setShowErrorFalse(String reviewId) {
-  //   if (!showErrorTextList.containsKey(reviewId)) {
-  //     showErrorTextList[reviewId] = false;
-  //   }
-  //   return showErrorTextList[reviewId]!;
-  // }
-  // bool setShowErrorTrue(String reviewId) {
-  //   if (!showErrorTextList.containsKey(reviewId)) {
-  //     showErrorTextList[reviewId] = false;
-  //   }
-  //   return showErrorTextList[reviewId]!;
-  // }
-
-
   void toggleExpanded() {
     isExpanded.value = !isExpanded.value;
   }
@@ -65,11 +31,13 @@ class CommentController extends GetxController {
 
   // Get controller for a specific review ID
   TextEditingController getController(String reviewId) {
-    if (!commentControllers.containsKey(reviewId)) {
-      commentControllers[reviewId] = TextEditingController();
-    }
-    return commentControllers[reviewId]!;
-  }
+  // If the controller doesn't exist, create and store one
+  commentControllers.putIfAbsent(reviewId, () => TextEditingController());
+
+  // Now it's guaranteed to exist
+  return commentControllers[reviewId]!;
+}
+
 
   // Optional: Clear a comment after posting
   void clearComment(String reviewId) {

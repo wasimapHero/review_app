@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,7 +7,6 @@ import 'package:review_app/data/controller/feed_Controller.dart';
 import 'package:review_app/data/models/comment.dart';
 import 'package:review_app/presentation/views/photo_gallery_page.dart';
 import 'package:review_app/presentation/widgets/feed-page/badge_chip.dart';
-import 'package:review_app/presentation/widgets/comment/comment_card.dart';
 
 class PostCard extends StatelessWidget {
   final String? userImage;
@@ -182,7 +183,7 @@ class PostCard extends StatelessWidget {
                 final badge = entry.value;
                 return BadgeChip(
                   text: badge,
-                  onTap: () => print('Badge $index tapped: $badge'),
+                  onTap: () => log('Badge $index tapped: $badge'),
                 );
               }).toList(),
             ),

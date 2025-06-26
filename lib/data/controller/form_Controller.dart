@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,7 +8,6 @@ import 'package:review_app/data/controller/airport_dropdown_Controller.dart';
 import 'package:review_app/data/controller/airport_dropdown_ControllerArrival.dart';
 import 'package:review_app/data/controller/feed_Controller.dart';
 import 'package:review_app/data/controller/image_upload_Controller.dart';
-import 'package:review_app/data/controller/userInfoFetch_Controller.dart';
 import 'package:review_app/data/models/airport.dart';
 import 'package:review_app/app/routes/app_routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -46,7 +47,7 @@ class FormController extends GetxController {
   // get airport list from api
   void getAirports() {
     airportList.value = airportController.airportList.value;
-    print('airportList.value: ${airportList.value}');
+    log('airportList.value: ${airportList.value}');
   }
 
   final airports =
@@ -157,7 +158,7 @@ class FormController extends GetxController {
         List<String> imageList = [];
         imageList = imageUploadController.fetchedImageUrls;
 
-        print('fetched iMageUrls are: ${imageList.length}');
+        log('fetched iMageUrls are: ${imageList.length}');
         
 
         final review = Review(
@@ -194,11 +195,11 @@ class FormController extends GetxController {
         Get.offAllNamed(TRouteNames.feedPage);
         update();
       } catch (e) {
-        Get.snackbar('Error', 'Failed to add review: \ $e',
+        Get.snackbar('Error', 'Failed to add review:  $e',
             snackPosition: SnackPosition.BOTTOM);
-        print(e);
+        log('$e');
       }
-      print("All fields valid, submitting review");
+      log("All fields valid, submitting review");
     }
   }
 

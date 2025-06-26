@@ -54,6 +54,7 @@ dependencies:
   dropdown_textfield: ^1.2.0
   uuid: ^4.5.1
   geocoding: ^2.1.0
+  connectivity_plus: ^6.0.3
 
 
 

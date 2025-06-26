@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:review_app/data/controller/photoGallery_Controller.dart';
 
-
 class PhotoGalleryPage extends StatelessWidget {
   final List<String> images;
   final int initialIndex;
@@ -18,7 +17,7 @@ class PhotoGalleryPage extends StatelessWidget {
     final screenHeight = Get.height;
     // 1) Put & init controller
     final photoGalleryController = Get.put(PhotoGalleryController());
-    photoGalleryController.init(images, initialIndex,screenHeight, context);
+    photoGalleryController.init(images, initialIndex, screenHeight, context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Gallery')),
@@ -33,11 +32,24 @@ class PhotoGalleryPage extends StatelessWidget {
               width: double.infinity,
               margin: const EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
-                image: DecorationImage(image: NetworkImage(photoGalleryController.imgs[index]), fit: BoxFit.cover, 
-                onError: (_, __) => const Center(child: Icon(Icons.error)),
-                ),
+                image: photoGalleryController.imgs[index] != null &&
+                        photoGalleryController.imgs[index].isNotEmpty &&
+                        Uri.tryParse(photoGalleryController.imgs[index])
+                                ?.hasAbsolutePath ==
+                            true
+                    ? DecorationImage(
+                        image: NetworkImage(photoGalleryController.imgs[index]),
+                        fit: BoxFit.cover,
+                        onError: (_, __) {},
+                      )
+                    : null,
+                color:
+                    Colors.grey[300], // fallback background color if no image
               ),
-              child: Container()
+              child: photoGalleryController.imgs[index] == null ||
+                      photoGalleryController.imgs[index].isEmpty
+                  ? const Center(child: Icon(Icons.broken_image, size: 40))
+                  : null,
             );
           },
         );

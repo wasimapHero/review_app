@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
@@ -23,6 +22,7 @@ class UserinfoController extends GetxController {
   final feedController = Get.put(FeedController);
   final myAccountController = Get.put(MyAccountController());
   final user = Supabase.instance.client.auth.currentUser;
+  final newUserInfo = UserInfo.empty().obs;
 
   var showUserIcon = true.obs;
 
@@ -30,40 +30,72 @@ class UserinfoController extends GetxController {
   final Rx<File?> selectedImage = Rx<File?>(null);
   final RxString uploadedUrl = ''.obs;
 
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
   // pick Image and put path value
   // from camera
   Future<void> pickSingleImageCamera() async {
-    try {
-      final pickedFile = await picker.pickImage(source: ImageSource.camera);
-      if (pickedFile != null) {
-        log('picked images recieved, ${pickedFile.path}');
-        selectedImage.value = File(pickedFile.path);
+  try {
+    // Clear old references before starting
+    selectedImage.value = null;
+    showUserIcon.value = true;
+
+    // Pick image from camera
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    // Check if something was picked
+    if (pickedFile != null && pickedFile.path.isNotEmpty) {
+      final imageFile = File(pickedFile.path);
+
+      // Ensure the file exists
+      final fileExists = await imageFile.exists();
+      if (fileExists) {
+        selectedImage.value = imageFile;
         showUserIcon.value = false;
-        log('selected image path: ${selectedImage.value!.path}');
+
+        log('✅ Picked image path: ${imageFile.path}');
+      } else {
+        log('⚠️ Picked file does not exist on the filesystem: ${pickedFile.path}');
       }
-    } catch (e) {
-      log('$e');
+    } else {
+      log('⚠️ No image picked from camera.');
     }
+  } catch (e, stackTrace) {
+    log('❌ Camera image pick failed: $e');
+    log('📌 Stack trace: $stackTrace');
   }
+}
+
 
   // from gallery
   Future<void> pickSingleImageGallery() async {
-    try {
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        log('picked images recieved, ${pickedFile.path}');
-        selectedImage.value = File(pickedFile.path);
+   try {
+    // Clear old references before starting
+    selectedImage.value = null;
+    showUserIcon.value = true;
+
+    // Pick image from camera
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    // Check if something was picked
+    if (pickedFile != null && pickedFile.path.isNotEmpty) {
+      final imageFile = File(pickedFile.path);
+
+      // Ensure the file exists
+      final fileExists = await imageFile.exists();
+      if (fileExists) {
+        selectedImage.value = imageFile;
         showUserIcon.value = false;
-        log('selected image path: ${selectedImage.value!.path}');
+
+        log('✅ Picked image path: ${imageFile.path}');
+      } else {
+        log('⚠️ Picked file does not exist on the filesystem: ${pickedFile.path}');
       }
-    } catch (e) {
-      log('$e');
+    } else {
+      log('⚠️ No image picked from camera.');
     }
+  } catch (e, stackTrace) {
+    log('❌ Camera image pick failed: $e');
+    log('📌 Stack trace: $stackTrace');
+  }
   }
 
   /// Upload that file into 'user-image' bucket and return its public URL
@@ -98,10 +130,11 @@ class UserinfoController extends GetxController {
       uploadedUrl.value = url;
       showUserIcon.value = false;
       log('uploaded image path: ${uploadedUrl.value}');
+      // clear selected path
+      selectedImage.value = null;
     } catch (e) {
       Get.snackbar('Upload failed', e.toString(),
           snackPosition: SnackPosition.BOTTOM);
-      return null;
     }
   }
 
@@ -112,27 +145,34 @@ class UserinfoController extends GetxController {
           .insert({
             'user_id': user!.id,
             'email': user!.email,
-            'user_name': myAccountController.editedUserName.value ,
-            'about': myAccountController.editedAbout.value ,
-            'user_image': uploadedUrl.value ,
+            'user_name': myAccountController.editedUserName.value,
+            'about': myAccountController.editedAbout.value,
+            'user_image': uploadedUrl.value,
             'created_at': user!.createdAt,
             'last_active': user!.lastSignInAt!,
           })
           .select()
           .single();
 
-      final newUserInfo = UserInfo.fromJson(response);
+      newUserInfo.value = UserInfo.fromJson(response);
       log('added userIfo: $newUserInfo');
 
       Get.snackbar('Success', 'user info added successfully',
           snackPosition: SnackPosition.BOTTOM);
 
-          //
-         await feedController.fetchedReviews();
-      Get.offAllNamed(TRouteNames.feedPage);
+      //
+      // feedController.fetchedReviews();
+      Get.find<UserinfofetchController>().refresh();
+      Get.find<FeedController>().refresh();
+      Future.delayed(Duration(milliseconds: 1000), () => Get.offAllNamed(TRouteNames.feedPage));
+      
       update();
+
+      // empty selected image
+      selectedImage.value = null;
+
     } catch (e) {
-      Get.snackbar('Failed to add user_info:', ' \ $e',
+      Get.snackbar('Failed to add user_info:', '  $e',
           snackPosition: SnackPosition.BOTTOM);
       log('$e');
     }
@@ -141,9 +181,9 @@ class UserinfoController extends GetxController {
   Future<void> updateUserInfoInDB(String userId) async {
     try {
       await Supabase.instance.client.from('user_info').update({
-        'user_name': myAccountController.editedUserName.value ,
-        'about': myAccountController.editedAbout.value ,
-        'user_image': uploadedUrl.value ,
+        'user_name': myAccountController.editedUserName.value,
+        'about': myAccountController.editedAbout.value,
+        'user_image': uploadedUrl.value,
       }).eq('user_id', userId); // update only the matching user
 
       Get.snackbar(
@@ -151,6 +191,8 @@ class UserinfoController extends GetxController {
         'User info updated successfully',
         snackPosition: SnackPosition.BOTTOM,
       );
+      Get.find<FeedController>().refresh();
+      Get.find<UserinfofetchController>().refresh();
       Get.offAllNamed(TRouteNames.feedPage);
       update();
     } catch (e) {

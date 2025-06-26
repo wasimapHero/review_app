@@ -48,7 +48,7 @@ class ActionButton extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 5),
-            Container(
+            SizedBox(
               width: iconWidth,
               height: iconHeight,
               child: Image.asset(icon, color: Colors.white,),

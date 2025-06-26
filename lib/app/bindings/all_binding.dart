@@ -18,10 +18,16 @@ class AllBinding extends Bindings {
   void dependencies() {
 // Register in the order of dependency:
     // 1) The fetcher (no dependencies of its own)
-    Get.lazyPut<MyAccountController>(
-      () => MyAccountController(),
+   Get.put(MyAccountController());
+   Get.put(AirportController());
+
+  //  Get.put(AirportDropdownController());
+   Get.lazyPut<AirportDropdownController>(
+      () => AirportDropdownController(),
       fenix: true,
     );
+   
+
     Get.lazyPut<UserinfoController>(
       () => UserinfoController(),
       fenix: true,
@@ -64,15 +70,9 @@ class AllBinding extends Bindings {
       fenix: true,
     );
 
-    Get.lazyPut<AirportController>(
-      () => AirportController(),
-      fenix: true,
-    );
 
-    Get.lazyPut<AirportDropdownController>(
-      () => AirportDropdownController(),
-      fenix: true,
-    );
+
+    
     Get.lazyPut<AirportDropdownControllerArrival>(
       () => AirportDropdownControllerArrival(),
       fenix: true,

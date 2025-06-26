@@ -21,7 +21,7 @@ class FormateDateAndTime {
 
   static String getMonthYear(String dateTimeString) {
     final DateTime dateTime = DateTime.parse(dateTimeString);
-    String month_Year = DateFormat('MMM yyyy').format(dateTime);
-        return month_Year;
+    String monthYear = DateFormat('MMM yyyy').format(dateTime);
+        return monthYear;
   }
 }

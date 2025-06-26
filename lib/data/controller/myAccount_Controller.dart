@@ -8,10 +8,6 @@ class MyAccountController extends GetxController {
       final editedUserName = ''.obs;
   final editedAbout = ''.obs;
 
-@override
-  void onInit() {
-    super.onInit();
-  }
 
     @override
   void onClose() {

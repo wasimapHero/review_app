@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,7 +16,7 @@ class ImageUploadController extends GetxController {
   Future<void> pickMultipleImages() async {
     final pickedFiles = await picker.pickMultiImage();
     if (pickedFiles.isNotEmpty) {
-      print('picked images recieved, ${pickedFiles[0].path}');
+      log('picked images recieved, ${pickedFiles[0].path}');
       selectedImages.value = pickedFiles.map((f) => File(f.path)).toList();
     }
   }
@@ -34,8 +35,8 @@ class ImageUploadController extends GetxController {
           lookupMimeType(imageFile.path) ?? 'application/octet-stream';
 
           //
-          print('fileName :  $fileName');
-          print('filePath :  $filePath');
+          log('fileName :  $fileName');
+          log('filePath :  $filePath');
 
       await bucket.uploadBinary(
         filePath,
@@ -82,7 +83,7 @@ class ImageUploadController extends GetxController {
 
       fetchedImageUrls.assignAll(urls);
     } catch (e) {
-      print('Error fetching review images: $e');
+      log('Error fetching review images: $e');
     }
   }
 }

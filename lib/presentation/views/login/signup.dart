@@ -8,6 +8,8 @@ import 'package:review_app/app/routes/app_routes.dart';
 class SignupScreen extends StatelessWidget {
   final auth = Get.find<AuthController>();
 
+   SignupScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -19,7 +19,7 @@ class UserinfofetchController extends GetxController {
           .select()
           .eq('user_id', userId)
           .single(); // Using `.single()` as i expect only one result
-          log('response from user-info bucket: ${response}');
+          log('response from user-info bucket: $response');
 
       if (response.isNotEmpty) {
         final data = UserInfo.fromJson(response);

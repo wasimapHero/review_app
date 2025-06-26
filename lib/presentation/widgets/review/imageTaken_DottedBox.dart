@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -35,7 +37,7 @@ final imageUploadController = Get.find<ImageUploadController>();
                         runSpacing: 8,
                         children: limitedImages.asMap().entries.map((entry) {
                           final index = entry.key;
-                          final badge = entry.value;
+                          // final badge = entry.value;
                         
                         return IntrinsicWidth(
                             child: Container(
@@ -55,7 +57,7 @@ final imageUploadController = Get.find<ImageUploadController>();
                                     onTap: () {
                                       imageUploadController.selectedImages.removeAt(index);
                                       Get.snackbar('Image Deleted!', '${path.basename(imageUploadController.selectedImages[index].path).length - 5}', snackPosition: SnackPosition.BOTTOM);
-                                      print('${path.basename(imageUploadController.selectedImages[index].path).length - 12}');
+                                      log('${path.basename(imageUploadController.selectedImages[index].path).length - 12}');
                                     },
                                     child: CircleAvatar(child: Icon(Icons.close, size: 6,),radius: 6,))
                                 ],

@@ -68,16 +68,16 @@ class MyAccountPage extends StatelessWidget {
                   // ------------------------------------------- body
                   Stack(children: [
                     // ------------------user Image
-                    userInfoFetchController.fetchedUserImage.value.isEmpty
+                    userInfoFetchController.fetchedUserImage.value.isEmpty && userInfoController.selectedImage.value!=null
                         ? Obx(() => ClipRRect(
                             borderRadius:
                                 BorderRadius.circular(mq.height * 0.09),
-                            child: showImageInUI()))    // ------- mock image if user image not available
+                            child:
+                                showImageInUI())) // ------- mock image if user image not available
                         : UserImage(),
 
                     // -----------------------User Image edit button
                     UserImageEditButton(),
-                    
                   ]),
                   SizedBox(
                     width: mq.width,
@@ -86,7 +86,7 @@ class MyAccountPage extends StatelessWidget {
 
                   // ------------------------------ show user email
                   Text(
-                    userInfoController.user!.email!,
+                    userInfoController.user?.email ?? 'No email found',
                     style: TextStyle(color: Colors.black54, fontSize: 16),
                   ),
                   SizedBox(
@@ -133,9 +133,12 @@ class MyAccountPage extends StatelessWidget {
                         style: TextStyle(color: Colors.black87, fontSize: 16),
                       ),
                       Text(
-                        FormateDateAndTime.getMonthYear(
-                            userInfoController.user!.createdAt),
-                        style: TextStyle(color: Colors.black54, fontSize: 16),
+                        userInfoController.user?.createdAt != null
+                            ? FormateDateAndTime.getMonthYear(
+                                userInfoController.user!.createdAt)
+                            : "Joined date not available",
+                        style: const TextStyle(
+                            color: Colors.black54, fontSize: 16),
                       )
                     ],
                   ),
@@ -143,7 +146,6 @@ class MyAccountPage extends StatelessWidget {
                     width: mq.width,
                     height: mq.height * 0.07,
                   ),
-
 
                   // ------------------------------------ Update Button
                   ElevatedButton.icon(
@@ -165,12 +167,11 @@ class MyAccountPage extends StatelessWidget {
           ),
         ),
 
-
         // --------------------------- logout button
         floatingActionButton: FloatingActionButton(
             onPressed: () async {
               //to show dialog of progress bar
-              await authController.signOut();
+              await authController.signOutUser();
             },
             // child: Icon(Icons.add_comment_rounded)
             child: Icon(Icons.logout)),
@@ -178,52 +179,60 @@ class MyAccountPage extends StatelessWidget {
     );
   }
 
-
   Widget showImageInUI() {
     if (userInfoController.showUserIcon.value == true) {
       return Image.asset('assets/images/user/user.png');
     } else {
-      return userInfoController.selectedImage.value != null
-          ? Container(
-              width: Get.height * .18,
-              height: Get.height * .18,
-              child: Image.file(
-                userInfoController.selectedImage.value!,
-                fit: BoxFit.cover,
-              ))
+      final imageFile = userInfoController.selectedImage.value;
+      return imageFile != null && imageFile.existsSync()
+              ? Container(
+                  width: Get.height * .18,
+                  height: Get.height * .18,
+                  child: Image.file(
+                    userInfoController.selectedImage.value!,
+                    fit: BoxFit.cover,
+                  ))
           : Center(
               child: Text('No image selected.'), // show path file
             );
     }
   }
-  
-   _updateButon() {
+
+  _updateButon() {
     return () async {
-                      if (_formKey2.currentState!.validate()) {
-                        _formKey2.currentState!.save();
-                        log('validator worked.');
-                        // put the text form field value in args
-                        myAccountController.putCtrlValue();
+      if (_formKey2.currentState!.validate()) {
+        _formKey2.currentState!.save();
+        log('validator worked.');
+        // put the text form field value in args
+        myAccountController.putCtrlValue();
 
-                        // upload picked image
-                         if (userInfoController.selectedImage.value != null) {
-                           await userInfoController.uploadUserImage(userInfoController.selectedImage.value!);
-                         }
+        // upload picked image
+        if (userInfoController.selectedImage.value != null) {
+          await userInfoController
+              .uploadUserImage(userInfoController.selectedImage.value!);
+        }
 
-                        final exists = await userInfoController.userInfoExists(
-                            Supabase.instance.client.auth.currentUser!.id);
-                        if (exists) {
-                          // user_info row is already in the table
-                          await userInfoController.updateUserInfoInDB(
-                              Supabase.instance.client.auth.currentUser!.id);
-                        } else {
-                          // insert user Info
-                          final feedCtrl = Get.find<FeedController>();
-                          await userInfoController
-                              .insertUserInfoToDB(feedCtrl);
-                        }
-                        // -- end code
-                      }
-                    };
-  
-}}
+        final currentUser = Supabase.instance.client.auth.currentUser;
+
+        if (currentUser == null) {
+          log("No authenticated user found.");
+          Get.snackbar(
+              "Error", "You must be signed in to update your profile.");
+          return;
+        }
+
+        final exists = userInfoController.newUserInfo.value.userId.isNotEmpty;
+        if (exists) {
+          // user_info row is already in the table
+          await userInfoController.updateUserInfoInDB(
+              Supabase.instance.client.auth.currentUser!.id);
+        } else {
+          // insert user Info
+          final feedCtrl = Get.find<FeedController>();
+          await userInfoController.insertUserInfoToDB(feedCtrl);
+        }
+        // -- end code
+      }
+    };
+  }
+}
